@@ -1,11 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>anjay</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Playlist from khusnul</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url('download.jpg');
+      background-color: black;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      color: white;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: rgba(149, 147, 207, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgb(46, 18, 206);
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    /* Custom Audio Player */
+    .audio-player {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button {
+      background-color: #0004ff;
+      border: none;
+      color: white;
+      padding: 10px 18px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0011ff;
+    }
+
+    /* Progress bar */
+    .progress-container {
+      width: 100%;
+      background-color: #ddd;
+      border-radius: 5px;
+      height: 8px;
+      cursor: pointer;
+    }
+
+    .progress {
+      background-color: #0004ff;
+      height: 100%;
+      width: 0%;
+      border-radius: 5px;
+      transition: width 0.1s linear;
+    }
+
+    /* Hidden default audio */
+    audio {
+      display: none;
+    }
+
+    /* Display current song title */
+    .song-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 10px;
+      min-height: 24px;
+    }
+  </style>
 </head>
 <body>
-    <h1></h1>
+  <div class="container">
+    <h1>🎵 Playlist from u</h1>
+
+    <div class="audio-player">
+      <div class="song-title" id="songTitle">Ricky Montgomery</div>
+
+      <audio id="audioPlayer" preload="metadata">
+        <source src="Ricky Montgomery.mp3" type="audio/mpeg" />
+    
+      </audio>
+      <div class="controls">
+        <button id="backBtn">⏮ Back</button>
+        <button id="playPauseBtn">▶️ Play</button>
+        <button id="nextBtn">⏭ Next</button>
+      </div>
+
+      <div class="progress-container" id="progressContainer">
+        <div class="progress" id="progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const playlist = [
+      { title: "Ricky Montgomery", src: "Ricky Montgomery.mp3" },
+      { title: "Lagu 2", src: "lagu2.mp3" },
+      { title: "Lagu 3", src: "lagu3.mp3" },
+    ];
+
+    let currentIndex = 0;
+
+    const audioPlayer = document.getElementById("audioPlayer");
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const backBtn = document.getElementById("backBtn");
+    const progress = document.getElementById("progress");
+    const progressContainer = document.getElementById("progressContainer");
+    const songTitle = document.getElementById("songTitle");
+
+    function loadSong(index) {
+      audioPlayer.src = playlist[index].src;
+      songTitle.textContent = playlist[index].title;
+      audioPlayer.load();
+    }
+
+    function playSong() {
+      audioPlayer.play();
+      playPauseBtn.textContent = "⏸ Pause";
+    }
+
+    function pauseSong() {
+      audioPlayer.pause();
+      playPauseBtn.textContent = "▶️ Play";
+    }
+
+    playPauseBtn.addEventListener("click", () => {
+      if (audioPlayer.paused) {
+        playSong();
+      } else {
+        pauseSong();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      currentIndex++;
+      if (currentIndex >= playlist.length) currentIndex = 0;
+      loadSong(currentIndex);
+      playSong();
+    });
+
+    backBtn.addEventListener("click", () => {
+      currentIndex--;
+      if (currentIndex < 0) currentIndex = playlist.length - 1;
+      loadSong(currentIndex);
+      playSong();
+    });
+
+    // Update progress bar as song plays
+    audioPlayer.addEventListener("timeupdate", () => {
+      if (audioPlayer.duration) {
+        const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+        progress.style.width = percent + "%";
+      }
+    });
+
+    // Seek on click progress bar
+    progressContainer.addEventListener("click", (e) => {
+      const width = progressContainer.clientWidth;
+      const clickX = e.offsetX;
+      const duration = audioPlayer.duration;
+
+      audioPlayer.currentTime = (clickX / width) * duration;
+    });
+
+    // Auto next song when current ends
+    audioPlayer.addEventListener("ended", () => {
+      currentIndex++;
+      if (currentIndex >= playlist.length) currentIndex = 0;
+      loadSong(currentIndex);
+      playSong();
+    });
+
+    // Load first song on page load
+    loadSong(currentIndex);
+  </script>
 </body>
 </html>
